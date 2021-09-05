@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Challenge.Interfaces;
+using Challenge.Repositories;
 
 namespace Challenge
 {
@@ -39,8 +41,12 @@ namespace Challenge
             services.AddDbContextPool<DisneyContext>(optionsAction: (provider, builder) =>
             {
                 builder.UseInternalServiceProvider(provider);
-                object p = builder.UseSqlServer(connectionString: "Data Source=(localdb)\\MSSQLLocalDB;Database=DisneyDb;Integrated Security=True;");
+                builder.UseSqlServer(connectionString: Configuration.GetConnectionString(name: "DisneyConnectionStrings"));
             });
+
+            services.AddScoped<IPeliculas_SeriesRepository, Peliculas_SeriesRepository>();
+            services.AddScoped<IGenerosRepository, GenerosRepository>();
+            services.AddScoped<IPersonajesRepository, PersonajesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
