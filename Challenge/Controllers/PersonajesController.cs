@@ -15,9 +15,11 @@ namespace Challenge.Controllers
     public class PersonajesController : ControllerBase
     {
         private readonly IPersonajesRepository _personajesRepository;
-        public PersonajesController(IPersonajesRepository personajesRepository)
+        private readonly IPeliculas_SeriesRepository _peliculas_SeriesRepository;
+        public PersonajesController(IPersonajesRepository personajesRepository, IPeliculas_SeriesRepository peliculas_SeriesRepository)
         {
             _personajesRepository = personajesRepository;
+            _peliculas_SeriesRepository = peliculas_SeriesRepository;
         }
 
         [HttpGet]

@@ -8,11 +8,8 @@ using System.Threading.Tasks;
 
 namespace Challenge.ViewModels.Peliculas_Series
 {
-    public class Peliculas_SeriesPostRequestViewModel
+    public class Peliculas_SeriesPostRequestViewModel : Peliculas_PersonajesViewModelBase
     {
-        public string Imagen { get; set; }
-        public string Titulo { get; set; }
-        public DateTime FechaDeCreacion { get; set; }
         [Range(1, 5)]
         public int Calificacion { get; set; }
     }

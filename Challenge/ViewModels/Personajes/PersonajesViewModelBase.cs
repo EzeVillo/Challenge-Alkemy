@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace Challenge.ViewModels.Personajes
 {
-    public class PersonajesResponseViewModel : PersonajesViewModelBase
+    public class PersonajesViewModelBase
     {
+        public string Imagen { get; set; }
+        public string Nombre { get; set; }
     }
 }

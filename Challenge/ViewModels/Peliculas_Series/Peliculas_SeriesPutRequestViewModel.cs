@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace Challenge.ViewModels.Peliculas_Series
 {
-    public class Peliculas_SeriePutRequestViewModel
+    public class Peliculas_SeriesPutRequestViewModel : Peliculas_PersonajesViewModelBase
     {
         public int Id { get; set; }
-        public string Imagen { get; set; }
-        public string Titulo { get; set; }
-        public DateTime FechaDeCreacion { get; set; }
+
         [Range(1, 5)]
         public int Calificacion { get; set; }
     }

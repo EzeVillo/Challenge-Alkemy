@@ -31,7 +31,7 @@ namespace Challenge.Controllers
             List<Peliculas_SeriesResponseViewModel> PersonajeResponse = new();
             foreach (Pelicula_Serie i in tmp)
             {
-                PersonajeResponse.Add(new Peliculas_SeriesResponseViewModel() { Imagen = i.Imagen, Titulo = i.Titulo, Fecha = i.FechaDeCreacion });
+                PersonajeResponse.Add(new Peliculas_SeriesResponseViewModel() { Imagen = i.Imagen, Titulo = i.Titulo, FechaDeCreacion = i.FechaDeCreacion });
             }
             return Ok(PersonajeResponse);
         }
@@ -69,7 +69,7 @@ namespace Challenge.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put(Peliculas_SeriePutRequestViewModel Pelicula)
+        public IActionResult Put(Peliculas_SeriesPutRequestViewModel Pelicula)
         {
             if (_peliculas_seriesRepositoryRepository.GetAllEntities().FirstOrDefault(x => x.Id == Pelicula.Id) == null) return BadRequest();
             return Ok(_peliculas_seriesRepositoryRepository.Update(new Pelicula_Serie()

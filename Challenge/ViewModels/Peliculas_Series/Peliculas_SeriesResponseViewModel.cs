@@ -5,10 +5,7 @@ using System.Threading.Tasks;
 
 namespace Challenge.ViewModels.Peliculas_Series
 {
-    public class Peliculas_SeriesResponseViewModel
+    public class Peliculas_SeriesResponseViewModel : Peliculas_PersonajesViewModelBase
     {
-        public string Imagen { get; set; }
-        public string Titulo { get; set; }
-        public DateTime Fecha { get; set; }
     }
 }
