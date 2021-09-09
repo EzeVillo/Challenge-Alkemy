@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace Challenge.ViewModels.Peliculas_Series
 {
-    public class Peliculas_SeriesPostRequestViewModel : Peliculas_PersonajesViewModelBase
+    public class Peliculas_SeriesPostRequestViewModel : Peliculas_SeriesViewModelBase
     {
         [Range(1, 5)]
         public int Calificacion { get; set; }
+        public int GeneroId { get; set; }
+        public List<Personaje> Personajes { get; set; }
     }
 }

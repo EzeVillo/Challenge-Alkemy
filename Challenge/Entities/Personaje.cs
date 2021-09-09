@@ -14,6 +14,6 @@ namespace Challenge.Entities
         public int Edad { get; set; }
         public int Peso { get; set; }
         public string Historia { get; set; }
-        public ICollection<Pelicula_Serie> Peliculas_Series { get; set; }
+        public ICollection<Pelicula_Serie> Peliculas_Series { get; set; } = new List<Pelicula_Serie>();
     }
 }

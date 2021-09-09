@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Challenge.ViewModels.Peliculas_Series
 {
-    public class Peliculas_SeriesResponseViewModel : Peliculas_PersonajesViewModelBase
+    public class Peliculas_SeriesResponseViewModel : Peliculas_SeriesViewModelBase
     {
     }
 }

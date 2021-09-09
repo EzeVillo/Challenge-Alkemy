@@ -11,5 +11,6 @@ namespace Challenge.ViewModels.Personajes
         public int Edad { get; set; }
         public int Peso { get; set; }
         public string Historia { get; set; }
+        public List<int> PeliculasId { get; set; }
     }
 }

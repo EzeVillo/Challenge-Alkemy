@@ -17,7 +17,7 @@ namespace Challenge.Repositories
 
         public Pelicula_Serie GetPelicula_Serie(int id)
         {
-            return DbSet.Include(x => x.Personajes).FirstOrDefault(x => x.Id == id);
+            return DbSet.Include(x=>x.Genero).Include(x => x.Personajes).FirstOrDefault(x => x.Id == id);
         }
     }
 }

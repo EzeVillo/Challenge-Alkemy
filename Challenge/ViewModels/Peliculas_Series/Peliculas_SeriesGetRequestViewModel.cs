@@ -7,6 +7,7 @@ namespace Challenge.ViewModels.Peliculas_Series
 {
     public class Peliculas_SeriesGetRequestViewModel
     {
+        public int Id { get; set; }
         public string name { get; set; }
         public int genre { get; set; }
         public string order { get; set; }

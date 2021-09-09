@@ -14,7 +14,7 @@ namespace Challenge.Entities
         public DateTime FechaDeCreacion { get; set; }
         [Range(1,5)]
         public int Calificacion { get; set; }
-        public ICollection<Personaje> Personajes { get; set; }
+        public ICollection<Personaje> Personajes { get; set; } = new List<Personaje>();
         public Genero Genero { get; set; }
     }
 }

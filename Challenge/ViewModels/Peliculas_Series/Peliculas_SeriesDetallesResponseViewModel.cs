@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Challenge.ViewModels.Peliculas_Series
 {
-    public class Peliculas_SeriesDetallesResponseViewModel : Peliculas_PersonajesViewModelBase
+    public class Peliculas_SeriesDetallesResponseViewModel : Peliculas_SeriesViewModelBase
     {
         public int Id { get; set; }
 
