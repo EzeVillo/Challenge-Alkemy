@@ -1,4 +1,5 @@
 ﻿using Challenge.Entities;
+using Challenge.ViewModels.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Challenge.Interfaces
 {
-    public interface IPersonajesRepository : IRepository<Personaje>
+    public interface IMailService
     {
-        Personaje GetPersonaje(int id);
-        List<Personaje> GetPersonajes();
+        Task SendMail(UserRegisterRequestViewModel User);
     }
 }

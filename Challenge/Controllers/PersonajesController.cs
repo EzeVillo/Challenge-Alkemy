@@ -2,6 +2,7 @@
 using Challenge.Entities;
 using Challenge.Interfaces;
 using Challenge.ViewModels.Personajes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Challenge.Controllers
 {
     [ApiController]
     [Route(template: "/characters")]
+    [Authorize]
     public class PersonajesController : ControllerBase
     {
         private readonly IPersonajesRepository _personajesRepository;
@@ -25,9 +27,24 @@ namespace Challenge.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] PersonajesGetRequestViewModel Personaje)
         {
-            if(Personaje.Id != 0)
-            {
-                Personaje PersonajeInterno = _personajesRepository.GetPersonaje(Personaje.Id);
+                List<Personaje> Personajes = _personajesRepository.GetPersonajes();
+                if (Personaje.name != null) Personajes = Personajes.Where(x => x.Nombre == Personaje.name).ToList();
+                if (Personaje.age != 0) Personajes = Personajes.Where(x => x.Edad == Personaje.age).ToList();
+                if (Personaje.idMovie != 0) Personajes = Personajes.Where(x => x.Peliculas_Series.FirstOrDefault(x => x.Id == Personaje.idMovie) != null).ToList();
+                if (!Personajes.Any()) return BadRequest();
+                List<PersonajesResponseViewModel> PersonajeResponse = new();
+                foreach (Personaje i in Personajes)
+                {
+                    PersonajeResponse.Add(new PersonajesResponseViewModel() { Imagen = i.Imagen, Nombre = i.Nombre });
+                }
+                return Ok(PersonajeResponse);
+        }
+
+        [HttpGet]
+        [Route("details")]
+        public IActionResult Get(int Id)
+        {
+                Personaje PersonajeInterno = _personajesRepository.GetPersonaje(Id);
                 if (PersonajeInterno == null) return BadRequest();
                 return Ok(new PersonajesDetallesResponseViewModel()
                 {
@@ -39,21 +56,6 @@ namespace Challenge.Controllers
                     Nombre = PersonajeInterno.Nombre,
                     Peso = PersonajeInterno.Peso
                 });
-            }
-            else
-            {
-                List<Personaje> Personajes = _personajesRepository.GetAllEntities();
-                if (Personaje.name != null) Personajes = Personajes.Where(x => x.Nombre == Personaje.name).ToList();
-                if (Personaje.age != 0) Personajes = Personajes.Where(x => x.Edad == Personaje.age).ToList();
-                if (Personaje.idMovie != 0) Personajes = Personajes.Where(x => x.Peliculas_Series.FirstOrDefault(x => x.Id == Personaje.idMovie) != null).ToList();
-                if (!Personajes.Any()) return BadRequest();
-                List<PersonajesResponseViewModel> PersonajeResponse = new();
-                foreach (Personaje i in Personajes)
-                {
-                    PersonajeResponse.Add(new PersonajesResponseViewModel() { Imagen = i.Imagen, Nombre = i.Nombre });
-                }
-                return Ok(PersonajeResponse);
-            }
         }
 
         [HttpPost]

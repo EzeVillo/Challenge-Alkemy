@@ -13,6 +13,6 @@ namespace Challenge.ViewModels.Peliculas_Series
         [Range(1, 5)]
         public int Calificacion { get; set; }
         public int GeneroId { get; set; }
-        public List<Personaje> Personajes { get; set; }
+        public List<int> PersonajesId { get; set; }
     }
 }

@@ -18,6 +18,10 @@ namespace Challenge.Repositories
         {
             return DbSet.Include(x => x.Peliculas_Series).FirstOrDefault(x => x.Id == id);
         }
+        public List<Personaje> GetPersonajes()
+        {
+            return DbSet.Include(x => x.Peliculas_Series).ToList();
+        }
     }
 }
 

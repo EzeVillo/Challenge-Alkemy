@@ -2,6 +2,7 @@
 using Challenge.Entities;
 using Challenge.Interfaces;
 using Challenge.ViewModels.Peliculas_Series;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Challenge.Controllers
 {
     [ApiController]
     [Route(template: "/movies")]
+    [Authorize]
     public class Peliculas_SeriesController : ControllerBase
     {
         private readonly IPeliculas_SeriesRepository _peliculas_seriesRepositoryRepository;
@@ -27,9 +29,24 @@ namespace Challenge.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] Peliculas_SeriesGetRequestViewModel Pelicula)
         {
-            if (Pelicula.Id != 0)
-            {
-                Pelicula_Serie PeliculaInterna = _peliculas_seriesRepositoryRepository.GetPelicula_Serie(Pelicula.Id);
+                IEnumerable<Pelicula_Serie> Peliculas = _peliculas_seriesRepositoryRepository.GetAllEntities();
+                if (Pelicula.name != null) Peliculas = Peliculas.Where(x => x.Titulo == Pelicula.name).ToList();
+                if (Pelicula.genre != 0) Peliculas = Peliculas.Where(x => x.Genero.Id == Pelicula.genre).ToList();
+                Peliculas = Pelicula.order != "DESC" ? Peliculas.OrderBy(x => x.FechaDeCreacion) : Peliculas.OrderByDescending(x => x.FechaDeCreacion);
+                if (!Peliculas.Any()) return BadRequest();
+                List<Peliculas_SeriesResponseViewModel> PeliculaResponse = new();
+                foreach (Pelicula_Serie i in Peliculas)
+                {
+                    PeliculaResponse.Add(new Peliculas_SeriesResponseViewModel() { Imagen = i.Imagen, Titulo = i.Titulo, FechaDeCreacion = i.FechaDeCreacion });
+                }
+                return Ok(PeliculaResponse);
+        }
+        
+        [HttpGet]
+        [Route("details")]
+        public IActionResult Get(int Id)
+        {
+                Pelicula_Serie PeliculaInterna = _peliculas_seriesRepositoryRepository.GetPelicula_Serie(Id);
                 if (PeliculaInterna == null) return BadRequest();
                 Peliculas_SeriesDetallesResponseViewModel p = new()
                 {
@@ -42,21 +59,6 @@ namespace Challenge.Controllers
                     Titulo = PeliculaInterna.Titulo
                 };
                 return Ok(p);
-            }
-            else
-            {
-                IEnumerable<Pelicula_Serie> Peliculas = _peliculas_seriesRepositoryRepository.GetAllEntities();
-                if (Pelicula.name != null) Peliculas = Peliculas.Where(x => x.Titulo == Pelicula.name).ToList();
-                if (Pelicula.genre != 0) Peliculas = Peliculas.Where(x => x.Genero.Id == Pelicula.genre).ToList();
-                Peliculas = Pelicula.order != "DESC" ? Peliculas.OrderBy(x => x.FechaDeCreacion) : Peliculas.OrderByDescending(x => x.FechaDeCreacion);
-                if (!Peliculas.Any()) return BadRequest();
-                List<Peliculas_SeriesResponseViewModel> PeliculaResponse = new();
-                foreach (Pelicula_Serie i in Peliculas)
-                {
-                    PeliculaResponse.Add(new Peliculas_SeriesResponseViewModel() { Imagen = i.Imagen, Titulo = i.Titulo, FechaDeCreacion = i.FechaDeCreacion });
-                }
-                return Ok(PeliculaResponse);
-            }
         }
 
         [HttpPost]
@@ -72,6 +74,11 @@ namespace Challenge.Controllers
                 Calificacion = Pelicula.Calificacion,
                 Genero = Genero
             };
+            List<Personaje> Personajes = _personajesRepositoryRepository.GetAllEntities();
+            foreach (int i in Pelicula.PersonajesId)
+            {
+                if (Personajes.Where(x => x.Id == i).Any()) p.Personajes.Add(Personajes.FirstOrDefault(x => x.Id == i));
+            }
             _peliculas_seriesRepositoryRepository.Add(p);
             return Ok(Pelicula);
         }
