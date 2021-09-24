@@ -1,5 +1,6 @@
 ﻿using Challenge.Contexts;
 using Challenge.Entities;
+using Challenge.Helpers;
 using Challenge.Interfaces;
 using Challenge.ViewModels.Personajes;
 using Microsoft.AspNetCore.Authorization;
@@ -27,35 +28,37 @@ namespace Challenge.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] PersonajesGetRequestViewModel Personaje)
         {
-                List<Personaje> Personajes = _personajesRepository.GetPersonajes();
-                if (Personaje.name != null) Personajes = Personajes.Where(x => x.Nombre == Personaje.name).ToList();
-                if (Personaje.age != 0) Personajes = Personajes.Where(x => x.Edad == Personaje.age).ToList();
-                if (Personaje.idMovie != 0) Personajes = Personajes.Where(x => x.Peliculas_Series.FirstOrDefault(x => x.Id == Personaje.idMovie) != null).ToList();
-                if (!Personajes.Any()) return BadRequest();
-                List<PersonajesResponseViewModel> PersonajeResponse = new();
-                foreach (Personaje i in Personajes)
-                {
-                    PersonajeResponse.Add(new PersonajesResponseViewModel() { Imagen = i.Imagen, Nombre = i.Nombre });
-                }
-                return Ok(PersonajeResponse);
+            List<Personaje> Personajes = _personajesRepository.GetPersonajes();
+            if (Personaje.name != null) Personajes = Personajes.Where(x => x.Nombre == Personaje.name).ToList();
+            if (Personaje.age != 0) Personajes = Personajes.Where(x => x.Edad == Personaje.age).ToList();
+            if (Personaje.idMovie != 0) Personajes = Personajes.Where(x => x.Peliculas_Series.FirstOrDefault(x => x.Id == Personaje.idMovie) != null).ToList();
+            if (!Personajes.Any()) return BadRequest();
+            List<PersonajesResponseViewModel> PersonajeResponse = new();
+            foreach (Personaje i in Personajes)
+            {
+                PersonajeResponse.Add(new PersonajesResponseViewModel() { Imagen = i.Imagen, Nombre = i.Nombre });
+            }
+            var ret = PagedList<PersonajesResponseViewModel>.Create(PersonajeResponse, Personaje.PageNumber, Personaje.PageSize);
+            if (!ret.Any()) return BadRequest();
+            return Ok(ret);
         }
 
         [HttpGet]
         [Route("details")]
         public IActionResult Get(int Id)
         {
-                Personaje PersonajeInterno = _personajesRepository.GetPersonaje(Id);
-                if (PersonajeInterno == null) return BadRequest();
-                return Ok(new PersonajesDetallesResponseViewModel()
-                {
-                    Id = PersonajeInterno.Id,
-                    Peliculas_Series = PersonajeInterno.Peliculas_Series.Any() ? PersonajeInterno.Peliculas_Series.Select(x => x.Titulo).ToList() : null,
-                    Edad = PersonajeInterno.Edad,
-                    Historia = PersonajeInterno.Historia,
-                    Imagen = PersonajeInterno.Imagen,
-                    Nombre = PersonajeInterno.Nombre,
-                    Peso = PersonajeInterno.Peso
-                });
+            Personaje PersonajeInterno = _personajesRepository.GetPersonaje(Id);
+            if (PersonajeInterno == null) return BadRequest();
+            return Ok(new PersonajesDetallesResponseViewModel()
+            {
+                Id = PersonajeInterno.Id,
+                Peliculas_Series = PersonajeInterno.Peliculas_Series.Any() ? PersonajeInterno.Peliculas_Series.Select(x => x.Titulo).ToList() : null,
+                Edad = PersonajeInterno.Edad,
+                Historia = PersonajeInterno.Historia,
+                Imagen = PersonajeInterno.Imagen,
+                Nombre = PersonajeInterno.Nombre,
+                Peso = PersonajeInterno.Peso
+            });
         }
 
         [HttpPost]

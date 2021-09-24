@@ -1,5 +1,6 @@
 ﻿using Challenge.Contexts;
 using Challenge.Entities;
+using Challenge.Helpers;
 using Challenge.Interfaces;
 using Challenge.ViewModels.Peliculas_Series;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +14,7 @@ namespace Challenge.Controllers
 {
     [ApiController]
     [Route(template: "/movies")]
-    [Authorize]
+
     public class Peliculas_SeriesController : ControllerBase
     {
         private readonly IPeliculas_SeriesRepository _peliculas_seriesRepositoryRepository;
@@ -29,36 +30,38 @@ namespace Challenge.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] Peliculas_SeriesGetRequestViewModel Pelicula)
         {
-                IEnumerable<Pelicula_Serie> Peliculas = _peliculas_seriesRepositoryRepository.GetAllEntities();
-                if (Pelicula.name != null) Peliculas = Peliculas.Where(x => x.Titulo == Pelicula.name).ToList();
-                if (Pelicula.genre != 0) Peliculas = Peliculas.Where(x => x.Genero.Id == Pelicula.genre).ToList();
-                Peliculas = Pelicula.order != "DESC" ? Peliculas.OrderBy(x => x.FechaDeCreacion) : Peliculas.OrderByDescending(x => x.FechaDeCreacion);
-                if (!Peliculas.Any()) return BadRequest();
-                List<Peliculas_SeriesResponseViewModel> PeliculaResponse = new();
-                foreach (Pelicula_Serie i in Peliculas)
-                {
-                    PeliculaResponse.Add(new Peliculas_SeriesResponseViewModel() { Imagen = i.Imagen, Titulo = i.Titulo, FechaDeCreacion = i.FechaDeCreacion });
-                }
-                return Ok(PeliculaResponse);
+            IEnumerable<Pelicula_Serie> Peliculas = _peliculas_seriesRepositoryRepository.GetAllEntities();
+            if (Pelicula.name != null) Peliculas = Peliculas.Where(x => x.Titulo == Pelicula.name).ToList();
+            if (Pelicula.genre != 0) Peliculas = Peliculas.Where(x => x.Genero.Id == Pelicula.genre).ToList();
+            Peliculas = Pelicula.order != "DESC" ? Peliculas.OrderBy(x => x.FechaDeCreacion) : Peliculas.OrderByDescending(x => x.FechaDeCreacion);
+            if (!Peliculas.Any()) return BadRequest();
+            List<Peliculas_SeriesResponseViewModel> PeliculaResponse = new();
+            foreach (Pelicula_Serie i in Peliculas)
+            {
+                PeliculaResponse.Add(new Peliculas_SeriesResponseViewModel() { Imagen = i.Imagen, Titulo = i.Titulo, FechaDeCreacion = i.FechaDeCreacion });
+            }
+            var ret = PagedList<Peliculas_SeriesResponseViewModel>.Create(PeliculaResponse, Pelicula.PageNumber, Pelicula.PageSize);
+            if (!ret.Any()) return BadRequest();
+            return Ok(ret);
         }
-        
+
         [HttpGet]
         [Route("details")]
         public IActionResult Get(int Id)
         {
-                Pelicula_Serie PeliculaInterna = _peliculas_seriesRepositoryRepository.GetPelicula_Serie(Id);
-                if (PeliculaInterna == null) return BadRequest();
-                Peliculas_SeriesDetallesResponseViewModel p = new()
-                {
-                    Id = PeliculaInterna.Id,
-                    Personajes = PeliculaInterna.Personajes.Any() ? PeliculaInterna.Personajes.Select(x => x.Nombre).ToList() : null,
-                    Calificacion = PeliculaInterna.Calificacion,
-                    FechaDeCreacion = PeliculaInterna.FechaDeCreacion,
-                    Genero = PeliculaInterna.Genero != null ? PeliculaInterna.Genero.Nombre : null,
-                    Imagen = PeliculaInterna.Imagen,
-                    Titulo = PeliculaInterna.Titulo
-                };
-                return Ok(p);
+            Pelicula_Serie PeliculaInterna = _peliculas_seriesRepositoryRepository.GetPelicula_Serie(Id);
+            if (PeliculaInterna == null) return BadRequest();
+            Peliculas_SeriesDetallesResponseViewModel p = new()
+            {
+                Id = PeliculaInterna.Id,
+                Personajes = PeliculaInterna.Personajes.Any() ? PeliculaInterna.Personajes.Select(x => x.Nombre).ToList() : null,
+                Calificacion = PeliculaInterna.Calificacion,
+                FechaDeCreacion = PeliculaInterna.FechaDeCreacion,
+                Genero = PeliculaInterna.Genero != null ? PeliculaInterna.Genero.Nombre : null,
+                Imagen = PeliculaInterna.Imagen,
+                Titulo = PeliculaInterna.Titulo
+            };
+            return Ok(p);
         }
 
         [HttpPost]
