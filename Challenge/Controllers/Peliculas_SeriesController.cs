@@ -14,7 +14,7 @@ namespace Challenge.Controllers
 {
     [ApiController]
     [Route(template: "/movies")]
-
+    [Authorize]
     public class Peliculas_SeriesController : ControllerBase
     {
         private readonly IPeliculas_SeriesRepository _peliculas_seriesRepositoryRepository;
