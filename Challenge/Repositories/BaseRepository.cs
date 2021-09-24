@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Challenge.Entities;
+using Challenge.Helpers;
 using Challenge.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Challenge.Repositories
 {
     public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity>
-        where TEntity : class
+        where TEntity : Entity
         where TContext : DbContext
     {
         private readonly TContext _dbContext;
@@ -55,6 +58,33 @@ namespace Challenge.Repositories
             _dbContext.Remove(entity);
             _dbContext.SaveChanges();
             return entity;
+        }
+
+        public IEnumerable<TEntity> FindBy(QueryParameters<TEntity> queryParameters)
+        {
+            Expression<Func<TEntity, bool>> whereTrue = x => true;
+            var where = queryParameters.Where ?? whereTrue;
+            if (queryParameters.OrderByAscending)
+            {
+                if (queryParameters.OrderBy != null)
+                {
+                    return DbSet.Where(where).OrderBy(queryParameters.OrderBy)
+                    .Skip((queryParameters.Pagina - 1) * queryParameters.Top)
+                    .Take(queryParameters.Top).ToList();
+                }
+                return DbSet.Where(where).OrderBy(x => x.Id)
+                .Skip((queryParameters.Pagina - 1) * queryParameters.Top)
+                .Take(queryParameters.Top).ToList();
+            }
+            if (queryParameters.OrderBy != null)
+            {
+                return DbSet.Where(where).OrderByDescending(queryParameters.OrderBy)
+                .Skip((queryParameters.Pagina - 1) * queryParameters.Top)
+                .Take(queryParameters.Top).ToList();
+            }
+            return DbSet.Where(where).OrderByDescending(x => x.Id)
+            .Skip((queryParameters.Pagina - 1) * queryParameters.Top)
+            .Take(queryParameters.Top).ToList();
         }
     }
 }

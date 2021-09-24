@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Challenge.Entities
 {
-    public class Pelicula_Serie
+    public class Pelicula_Serie : Entity
     {
-        public int Id { get; set; }
         public string Imagen { get; set; }
         public string Titulo { get; set; }
         public DateTime FechaDeCreacion { get; set; }

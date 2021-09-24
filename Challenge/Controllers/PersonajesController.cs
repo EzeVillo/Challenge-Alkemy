@@ -14,7 +14,7 @@ namespace Challenge.Controllers
 {
     [ApiController]
     [Route(template: "/characters")]
-    [Authorize]
+
     public class PersonajesController : ControllerBase
     {
         private readonly IPersonajesRepository _personajesRepository;
@@ -28,10 +28,15 @@ namespace Challenge.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] PersonajesGetRequestViewModel Personaje)
         {
+            QueryParameters<Personaje> Filter = new(Personaje.PageNumber, Personaje.PageSize);
+            Filter.Where = x => x.Nombre == Personaje.name &&
+            x.Edad == Personaje.age &&
+            x.Peliculas_Series.FirstOrDefault(y => y.Id == Personaje.idMovie) != null;
+            return Ok(_personajesRepository.FindBy(Filter));
+
+
+            /*
             List<Personaje> Personajes = _personajesRepository.GetPersonajes();
-            if (Personaje.name != null) Personajes = Personajes.Where(x => x.Nombre == Personaje.name).ToList();
-            if (Personaje.age != 0) Personajes = Personajes.Where(x => x.Edad == Personaje.age).ToList();
-            if (Personaje.idMovie != 0) Personajes = Personajes.Where(x => x.Peliculas_Series.FirstOrDefault(x => x.Id == Personaje.idMovie) != null).ToList();
             if (!Personajes.Any()) return BadRequest();
             List<PersonajesResponseViewModel> PersonajeResponse = new();
             foreach (Personaje i in Personajes)
@@ -40,7 +45,7 @@ namespace Challenge.Controllers
             }
             var ret = PagedList<PersonajesResponseViewModel>.Create(PersonajeResponse, Personaje.PageNumber, Personaje.PageSize);
             if (!ret.Any()) return BadRequest();
-            return Ok(ret);
+            return Ok(ret);*/
         }
 
         [HttpGet]
